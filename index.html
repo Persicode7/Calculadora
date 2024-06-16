@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadoras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://img.freepik.com/vector-gratis/fondo-numerologia-degradado_23-2150066816.jpg'); /* Ruta a tu imagen de fondo */
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed; /* Fija el fondo para que no se desplace con el contenido */
+            background-position: center;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between; /* Alinear calculadoras con espacio entre ellas */
+            max-width: 1000px;
+            width: 100%;
+            margin: 20px;
+        }
+
+        .calculator {
+            width: calc(50% - 10px); /* 50% del ancho menos el espacio entre las calculadoras */
+            background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente blanco para contenido */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px; /* Espacio entre las calculadoras */
+            box-sizing: border-box; /* Asegura que el padding no incremente el tamaño total */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 16px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100% center;
+            padding: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            
+        }
+
+        .results, .result {
+            margin-top: 20px;
+            text-align: left; /* Alinear resultados a la izquierda */
+        }
+
+        /* Media query para ajuste en pantalla pequeña */
+        @media (max-width: 800px) {
+            .container {
+                flex-direction: column; /* Apilar calculadoras en dispositivos pequeños */
+            }
+
+            .calculator {
+                width: 100%; /* Ocupar el 100% del ancho en dispositivos pequeños */
+            }
+        }
+
+        /* Estilos para la modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); /* Fondo semitransparente */
+            padding-top: 60px; 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; /* Centrar modal horizontalmente */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px; 
+            border-radius: 5px;
+            text-align: center;
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .examples {
+    max-width: 1000px;
+    width: 100%;
+    margin: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente blanco */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    text-align: left; /* Alinear texto a la izquierda */
+}
+
+.examples .example {
+    margin-bottom: 20px;
+}
+
+.examples h2 {
+    margin-bottom: 10px;
+}
+
+.examples p {
+    margin-bottom: 10px;
+}
+
+.examples ul, .examples ol {
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+.examples img {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Media query para ajuste en pantalla pequeña */
+@media (max-width: 800px) {
+    .examples {
+        padding: 10px;
+    }
+}
+/* Estilos para el pie de página */
+.footer {
+            background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente blanco */
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 70%;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <!-- Calculadora 1 -->
+        <div class="calculator" id="intervalCalculator">
+            <h1>Calculadora de Estimación por Intervalo</h1>
+            <form id="intervalForm">
+                <div class="form-group">
+                    <label for="mean">Media muestral (x̄):</label>
+                    <input type="number" id="mean" placeholder="ej: 100" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="stdDev">Desviación estándar (s):</label>
+                    <input type="number" id="stdDev" placeholder="ej: 25" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="sampleSize">Tamaño de la muestra (n):</label>
+                    <input type="number" id="sampleSize" placeholder="ej: 40" required>
+                </div>
+                <div class="form-group">
+                    <label for="confidenceLevel">Nivel de confianza (%):</label>
+                    <input type="number" id="confidenceLevel" placeholder="En un rango de: 80-90%" step="0.01">
+                </div>
+                <div class="buttons-container">
+                    <button type="button" onclick="calculateInterval()">Calcular Intervalo de Confianza</button>
+                    <button type="button" onclick="resetIntervalForm()">Restablecer</button>
+                </div>
+
+            </form>
+            <div class="result" id="result"></div>
+            <div class="example">
+                <h2>Ejemplo de Datos:</h2>
+                <p>Media muestral: 50</p>
+                <p>Desviación estándar: 10</p>
+                <p>Tamaño de la muestra: 30</p>
+                <p>Nivel de confianza: 95%</p>
+            </div>
+            
+        </div>
+
+        <!-- Calculadora 2 -->
+        <div class="calculator" id="estimationCalculator">
+            <h1>Calculadora de Estimación Puntual</h1>
+            <form id="estimationForm">
+                <div class="form-group">
+                    <label for="data">Introduce los datos de la muestra (separados por comas):</label>
+                    <input type="text" id="data" placeholder="ej: 2, 4, 6, 8, 10">
+                </div>
+                <div class="form-group">
+                    <label for="successes">Número de éxitos (para proporción):</label>
+                    <input type="number" id="successes" placeholder="ej: 3">
+                </div>
+                <div class="form-group">
+                    <button type="button" onclick="calculate()">Calcular Estimación</button>
+                    <button type="button" onclick="resetEstimationForm()">Restablecer</button>
+                </div>
+            </form>
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+
+   <!-- Ejercicios de estimación por intervalos y puntual -->
+<div class="examples">
+    <div class="example">
+        <h2>Ejercicio de Estimación por Intervalos enfocado en la informática y tecnología:</h2>
+        <p>Una empresa de software quiere estimar el tiempo promedio que los usuarios pasan en su nueva aplicación por sesión. Para ello, han recopilado datos de 40 sesiones de usuarios.</p>
+        <p><strong>Datos del ejercicio:</strong></p>
+        <ul>
+            <li>Media Muestral (R): 22 minutos</li>
+            <li>Desviación Estándar (s): 5 minutos</li>
+            <li>Tamaño de la Muestra (n): 40 sesiones</li>
+            <li>Nivel de Confianza (%): 95%</li>
+        </ul>
+        <p><strong>Pregunta:</strong> Utilizando la calculadora de estimación por intervalo proporcionada, ¿Cuál es el intervalo de confianza para el tiempo promedio de sesión de los usuarios en la aplicación?</p>
+        <p>Para resolver este ejercicio, debes introducir los datos proporcionados en la calculadora y calcular el intervalo de confianza. Esto te dará un rango dentro del cual puedes estar seguro, con un nivel de confianza del 95%, que se encuentra el verdadero tiempo promedio de sesión de los usuarios en la aplicación.</p>
+        <p><strong>Instrucciones:</strong></p>
+        <ol>
+            <li>Introduce la <em>media muestral</em> (22 minutos) en la calculadora.</li>
+            <li>Introduce la <em>desviación estándar</em> (5 minutos).</li>
+            <li>Introduce el <em>tamaño de la muestra</em> (40 sesiones).</li>
+            <li>Selecciona el <em>nivel de confianza</em> (95%).</li>
+            <br><img src="Intervalo-imagen.PNG"></li><br><br>
+            <li>Una vez que hayas ingresado estos datos, presiona el botón para calcular el intervalo de confianza. La calculadora te proporcionará dos números que representan los límites inferior y superior del intervalo.</li>
+            <br>
+            <li>Por ejemplo, si los resultados fueran 20 minutos y 24 minutos, podrías decir que con un 95% de confianza, el tiempo promedio que los usuarios pasan en la aplicación por sesión está entre 20 y 24 minutos.</li>
+        </ol>
+    </div>
+
+    <div class="example">
+        <h2>Ejercicio de Estimación Puntual enfocado en la informática y tecnología:</h2>
+        <p>Una empresa de tecnología está probando la efectividad de un nuevo algoritmo de seguridad en su red interna. Para evaluar su éxito, han registrado los resultados en una muestra de 10 intentos de intrusión.</p>
+        <p><strong>Datos del ejercicio:</strong></p>
+        <ul>
+            <li>Datos de la muestra (número de intentos bloqueados por el algoritmo): 8, 9, 7, 10, 8, 9, 7, 8, 9, 10</li>
+            <li>Número de éxitos (intentos bloqueados considerados como éxitos): 9</li>
+        </ul>
+        <p><strong>Pregunta:</strong> Utilizando la calculadora de estimación puntual proporcionada, ¿Cuál es la estimación puntual para la proporción de éxito del algoritmo de seguridad?</p>
+        <p>Para resolver este ejercicio, debes introducir los datos de la muestra y el número de éxitos en la calculadora para calcular la estimación puntual. Esto te dará una idea del rendimiento del algoritmo y su tasa de éxito en bloquear intentos de intrusión.</p>
+        <p><strong>Instrucciones:</strong></p>
+        <ol>
+            <li>Introduce los <em>datos de la muestra</em> (8, 9, 7, 10, 8, 9, 7, 8, 9, 10) en la calculadora.</li>
+            <li>Introduce el <em>número de éxitos</em> (9).</li>
+            <br><img src="Puntual_imagen.PNG"></li><br><br>
+            <li>Presiona el botón para calcular la estimación. La calculadora te proporcionará un número que representa la estimación puntual para la proporción de éxito del algoritmo de seguridad.</li>
+            <br>
+            <li>Por ejemplo, si la calculadora te da un resultado de 0.9, esto sugeriría que el algoritmo tiene una tasa de éxito del 90% en bloquear intentos de intrusión.</li>
+        </ol>
+    </div>
+</div>
+
+
+    <!-- Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="modalMessage"></p>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="footer">
+        Nikol Garcia & Josvic Garcia <br><br>
+        Ingeniería Informática <br><br>
+        Matemática Aplicada <br><br>
+        Universidad Politécnica Territorial Alonso Gamero
+    </div>
+
+    <script>
+        function calculateInterval() {
+            const mean = parseFloat(document.getElementById('mean').value);
+            const stdDev = parseFloat(document.getElementById('stdDev').value);
+            const sampleSize = parseInt(document.getElementById('sampleSize').value);
+            let confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = ''; // Limpiar resultados anteriores
+
+            if (isNaN(mean) || isNaN(stdDev) || isNaN(sampleSize)) {
+                displayError('Por favor, ingrese todos los valores necesarios: (media muestral, desviación estándar y tamaño de la muestra).');
+                return;
+            }
+
+            if (isNaN(confidenceLevel) || confidenceLevel < 80 || confidenceLevel > 99) {
+                confidenceLevel = 95;
+                displayError('Nivel de confianza inválido. Se usará el nivel de confianza predeterminado del 95%.');
+            }
+
+            const zValues = {
+                80: 1.282,
+                81: 1.311,
+                82: 1.34,
+                83: 1.372,
+                84: 1.405,
+                85: 1.44,
+                86: 1.476,
+                87: 1.514,
+                88: 1.554,
+                89: 1.596,
+                90: 1.645,
+                91: 1.695,
+                92: 1.751,
+                93: 1.812,
+                94: 1.88,
+                95: 1.96,
+                96: 2.054,
+                97: 2.17,
+                98: 2.326,
+                99: 2.576
+            };
+
+            const z = zValues[confidenceLevel] || 1.96; // Valor predeterminado para 95% si no se encuentra
+            const marginOfError = z * (stdDev / Math.sqrt(sampleSize));
+            const lowerBound = mean - marginOfError;
+            const upperBound = mean + marginOfError;
+
+            resultDiv.innerHTML = `
+                <h2>Resultado:</h2>
+                <p>Intervalo de confianza: (${lowerBound.toFixed(2)}, ${upperBound.toFixed(2)})</p>
+                <p>Margen de error: ${marginOfError.toFixed(2)}</p>
+            `;
+        }
+
+        function resetIntervalForm() {
+            document.getElementById('intervalForm').reset();
+            document.getElementById('result').innerHTML = '';
+        }
+
+        function calculate() {
+            const dataInput = document.getElementById('data').value;
+            const data = dataInput.split(',').map(Number).filter(val => !isNaN(val));
+            const sum = data.reduce((acc, val) => acc + val, 0);
+            const mean = sum / data.length;
+
+            const sortedData = data.slice().sort((a, b) => a - b);
+            const mid = Math.floor(sortedData.length / 2);
+            const median = sortedData.length % 2 !== 0 
+                ? sortedData[mid] 
+                : (sortedData[mid - 1] + sortedData[mid]) / 2;
+
+            const successes = parseInt(document.getElementById('successes').value);
+            const proportion = successes / data.length;
+
+            document.getElementById('results').innerHTML = `
+                <p><strong>Datos introducidos:</strong> ${data.join(', ')}</p>
+                <p><strong>Estimación puntual (Media Muestral):</strong> ${mean.toFixed(2)}</p>
+                <p><strong>Estimación puntual (Mediana Muestral):</strong> ${median.toFixed(2)}</p>
+                <p><strong>Estimación puntual (Proporción Muestral):</strong> ${proportion.toFixed(2)}</p>
+            `;
+        }
+
+        function resetEstimationForm() {
+            document.getElementById('estimationForm').reset();
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function displayError(message) {
+            const modal = document.getElementById('errorModal');
+            const modalMessage = document.getElementById('modalMessage');
+            modalMessage.innerText = message;
+            modal.style.display = "block"; // Mostrar modal
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('errorModal');
+            modal.style.display = "none"; // Ocultar modal
+        }
+
+        // Cerrar modal si se hace clic fuera de ella
+        window.onclick = function(event) {
+            const modal = document.getElementById('errorModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
